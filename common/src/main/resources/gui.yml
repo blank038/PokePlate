@@ -1,0 +1,93 @@
+# 界面标题
+title: "&8 图鉴列表"
+# 界面大小
+size: 45
+# 界面物品设定
+items:
+  fg:
+    type: STAINED_GLASS_PANE
+    data: 15
+    amount: 1
+    name: ""
+    lore: [ ]
+    slot: "0-8,36-44"
+  1s:
+    type: "PIXELMON_POKE_BALL"
+    data: 0
+    amount: 1
+    name: "&f一星精灵图鉴"
+    lore: [ ]
+    slot: 9
+    star: 1
+  2s:
+    type: "PIXELMON_PREMIER_BALL"
+    data: 0
+    amount: 1
+    name: "&a二星精灵图鉴"
+    lore: [ ]
+    slot: 11
+    star: 2
+  3s:
+    type: "PIXELMON_QUICK_BALL"
+    data: 0
+    amount: 1
+    name: "&b三星精灵图鉴"
+    lore: [ ]
+    slot: 13
+    star: 3
+  4s:
+    type: "PIXELMON_LURE_BALL"
+    data: 0
+    amount: 1
+    name: "&d四星精灵图鉴"
+    lore: [ ]
+    slot: 15
+    star: 4
+  5s:
+    type: "PIXELMON_GS_BALL"
+    data: 0
+    amount: 1
+    name: "&e五星精灵图鉴"
+    lore: [ ]
+    slot: 17
+    star: 5
+  6s:
+    type: "PIXELMON_BEAST_BALL"
+    data: 0
+    amount: 1
+    name: "&3六星精灵图鉴"
+    lore: [ ]
+    slot: 27
+    star: 6
+  7s:
+    type: "PIXELMON_CHERISH_BALL"
+    data: 0
+    amount: 1
+    name: "&c七星精灵图鉴"
+    lore: [ ]
+    slot: 29
+    star: 7
+  8s:
+    type: "PIXELMON_MOON_BALL"
+    data: 0
+    amount: 1
+    name: "&3奇异星精灵图鉴"
+    lore: [ ]
+    slot: 31
+    star: 8
+  9s:
+    type: "PIXELMON_MASTER_BALL"
+    data: 0
+    amount: 1
+    name: "&6日月精灵图鉴"
+    lore: [ ]
+    slot: 33
+    star: 9
+  10s:
+    type: "PIXELMON_PREMIER_BALL"
+    data: 0
+    amount: 1
+    name: "&9剑盾精灵图鉴"
+    lore: [ ]
+    slot: 35
+    star: 10

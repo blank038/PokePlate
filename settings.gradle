@@ -1,0 +1,4 @@
+rootProject.name = "PokePlate"
+
+include 'common'
+include 'module:pixelmon-1_12', 'module:pixelmon-1_16'

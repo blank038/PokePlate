@@ -1,0 +1,11 @@
+name: PokePlate
+main: com.aiyostudio.pokeplate.PokePlate
+depend:
+  - AyCore
+  - PokeStar
+softdepend:
+  - PlaceholderAPI
+version: @version@
+commands:
+  tj:
+    description: Command for PokePlate

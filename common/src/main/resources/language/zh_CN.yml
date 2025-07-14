@@ -1,0 +1,14 @@
+prefix: "&b图鉴系统&f "
+
+pls-enter-player: "请输入玩家名."
+pls-enter-pokemon: "请输入宝可梦名."
+
+player-offline: "玩家不在线或数据还未加载完成."
+error: "出现错误."
+
+no-previous-page: "已经是第一页了."
+no-next-page: "已经是最后一页了."
+claimed: "已领取过或条件未达."
+gotten: "成功领取 &a%star_name% &f奖励！"
+
+reload: "插件配置重载完成."
