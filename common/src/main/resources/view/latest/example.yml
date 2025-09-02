@@ -30,8 +30,7 @@ display-item:
 # 界面物品
 items:
   fg:
-    type: STAINED_GLASS_PANE
-    data: 15
+    type: BLACK_STAINED_GLASS_PANE
     amount: 1
     name: ""
     lore: [ ]
