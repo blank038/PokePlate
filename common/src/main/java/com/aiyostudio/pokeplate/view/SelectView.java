@@ -1,18 +1,18 @@
 package com.aiyostudio.pokeplate.view;
 
 import com.aiyostudio.pokeplate.PokePlate;
+import com.aiyostudio.pokeplate.api.PlateApi;
 import com.aiyostudio.pokeplate.data.DataContainer;
 import com.aiyostudio.pokeplate.data.plate.PlateData;
 import com.aiyostudio.pokeplate.data.player.PlayerData;
 import com.aiyostudio.pokeplate.data.player.PokedexChildData;
 import com.aiyostudio.pokeplate.i18n.I18n;
 import com.aiyostudio.pokeplate.storage.StorageHandler;
+import com.aiyostudio.pokeplate.util.TextUtil;
 import com.aystudio.core.bukkit.util.common.CommonUtil;
-import com.aystudio.core.bukkit.util.common.TextUtil;
 import com.aystudio.core.bukkit.util.inventory.GuiModel;
 import de.tr7zw.nbtapi.NBTItem;
 import de.tr7zw.nbtapi.utils.MinecraftVersion;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -58,9 +58,9 @@ public class SelectView {
                     if (section.contains("customModelData")) {
                         meta.setCustomModelData(section.getInt("customModelData"));
                     }
-                    meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', section.getString("name")));
+                    meta.setDisplayName(TextUtil.colorify(section.getString("name")));
                     List<String> lore = section.getStringList("lore");
-                    lore.replaceAll((s) -> ChatColor.translateAlternateColorCodes('&', s));
+                    lore.replaceAll(TextUtil::colorify);
                     meta.setLore(lore);
                     itemStack.setItemMeta(meta);
                     for (int i : CommonUtil.formatSlots(section.getString("slot"))) {
@@ -78,7 +78,9 @@ public class SelectView {
 
                 String k = entry.getKey();
                 PlateData v = entry.getValue();
-                PlateData.DisplayItem display = v.getDisplayItem();
+                boolean canView = PlateApi.canView(player, k);
+
+                PlateData.DisplayItem display = canView ? v.getDisplayItem() : v.getNoPermsItem();
                 PokedexChildData childData = playerData.getChild(k);
                 // Get variable values
                 int size = v.getRequire().getPokemon().size(), current = childData.getCount();
@@ -89,28 +91,14 @@ public class SelectView {
                 String unlockFormat = unlockDate == null ? emptyDate : unlockDate.format(DataContainer.dateTimeFormatter);
 
                 // Create display item
-                ItemStack itemStack = new ItemStack(display.getType(), display.getAmount());
-                ItemMeta itemMeta = itemStack.getItemMeta();
+                ItemStack itemStack = getPlateDisplayItem(display, progress, unlockFormat, gottenFormat);
 
-                if (display.getData() > 0) {
-                    itemStack.setDurability((short) display.getData());
+                if (canView) {
+                    NBTItem nbtItem = new NBTItem(itemStack);
+                    nbtItem.setString("PlateId", k);
+                    itemStack = nbtItem.getItem();
                 }
-                if (display.getCustomModelData() > 0) {
-                    itemMeta.setCustomModelData(display.getCustomModelData());
-                }
-                itemMeta.setDisplayName(TextUtil.formatHexColor(display.getDisplayName()));
-                List<String> lore = new ArrayList<>(display.getLore());
-                lore.replaceAll((line) -> TextUtil.formatHexColor(line)
-                        .replace("%progress%", String.valueOf(progress))
-                        .replace("%unlock_date%", unlockFormat)
-                        .replace("%gotten_date%", gottenFormat));
-                itemMeta.setLore(lore);
-                itemStack.setItemMeta(itemMeta);
-
-                NBTItem nbtItem = new NBTItem(itemStack);
-                nbtItem.setString("PlateId", k);
-                model.setItem(plateSlots[slotIndex], nbtItem.getItem());
-
+                model.setItem(plateSlots[slotIndex], itemStack);
                 slotIndex++;
             }
 
@@ -132,5 +120,26 @@ public class SelectView {
 
             model.openInventory(player);
         });
+    }
+
+    private static ItemStack getPlateDisplayItem(PlateData.DisplayItem display, int progress, String unlockFormat, String gottenFormat) {
+        ItemStack itemStack = new ItemStack(display.getType(), display.getAmount());
+        ItemMeta itemMeta = itemStack.getItemMeta();
+
+        if (display.getData() > 0) {
+            itemStack.setDurability((short) display.getData());
+        }
+        if (display.getCustomModelData() > 0) {
+            itemMeta.setCustomModelData(display.getCustomModelData());
+        }
+        itemMeta.setDisplayName(TextUtil.colorify(display.getDisplayName()));
+        List<String> lore = new ArrayList<>(display.getLore());
+        lore.replaceAll((line) -> TextUtil.colorify(line)
+                .replace("%progress%", String.valueOf(progress))
+                .replace("%unlock_date%", unlockFormat)
+                .replace("%gotten_date%", gottenFormat));
+        itemMeta.setLore(lore);
+        itemStack.setItemMeta(itemMeta);
+        return itemStack;
     }
 }

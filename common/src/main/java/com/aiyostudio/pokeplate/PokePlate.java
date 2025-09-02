@@ -9,6 +9,7 @@ import com.aiyostudio.pokeplate.i18n.I18n;
 import com.aiyostudio.pokeplate.listener.PlayerListener;
 import com.aiyostudio.pokeplate.manager.StateManager;
 import com.aiyostudio.pokeplate.storage.StorageHandler;
+import com.aiyostudio.pokeplate.task.AutoSaveTask;
 import com.aystudio.core.bukkit.platform.IPlatformApi;
 import com.aystudio.core.bukkit.plugin.AyPlugin;
 import de.tr7zw.nbtapi.utils.MinecraftVersion;
@@ -26,7 +27,7 @@ public class PokePlate extends AyPlugin {
     @Getter
     private static PokePlate instance;
     @Getter
-    private static IPokemonModule api;
+    private static IPokemonModule module;
 
     @Override
     public void onEnable() {
@@ -48,6 +49,8 @@ public class PokePlate extends AyPlugin {
         StorageHandler.initRepository();
         this.getCommand("tj").setExecutor(new PokePlateCommand());
         Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
+
+        AutoSaveTask.register();
     }
 
     @Override
@@ -83,7 +86,7 @@ public class PokePlate extends AyPlugin {
         this.getLogger().info("Loaded module: " + apiClass);
         try {
             Class<? extends IPlatformApi> classes = (Class<? extends IPlatformApi>) Class.forName(apiClass);
-            api = (IPokemonModule) classes.newInstance();
+            module = (IPokemonModule) classes.newInstance();
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             this.getLogger().log(Level.WARNING, e, () -> "Failed to initialize api class.");
         }

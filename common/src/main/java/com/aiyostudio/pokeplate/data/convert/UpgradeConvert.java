@@ -49,7 +49,7 @@ public class UpgradeConvert {
                         data.set("require.permission", "none");
                         data.set("require.plate", new ArrayList<>());
                         data.set("require.unlock", false);
-                        data.set("require.pokemon", PokePlate.getApi().getPokemonListByStar(star));
+                        data.set("require.pokemon", PokePlate.getModule().getPokemonListByStar(star));
                         data.set("commands", starSection.getStringList(key));
                         data.set("variable.reward", infoSection.getStringList(key));
                         try {

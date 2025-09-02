@@ -11,18 +11,21 @@ import java.util.List;
 
 @Getter
 public class PlateData {
-    private final String viewId;
+    private final String viewId, displayName;
     private final Require require;
     private final List<String> commands = new ArrayList<>();
     private final List<String> rewardVariable = new ArrayList<>();
-    private final DisplayItem displayItem;
+    private final DisplayItem displayItem, noPermsItem;
 
     public PlateData(FileConfiguration data) {
         this.viewId = data.getString("view-id");
+        this.displayName = data.getString("display-name", "");
         this.require = new Require(data.getConfigurationSection("require"));
         this.commands.addAll(data.getStringList("commands"));
         this.rewardVariable.addAll(data.getStringList("variable.reward"));
+        this.rewardVariable.replaceAll(TextUtil::colorify);
         this.displayItem = new DisplayItem(data.getConfigurationSection("display-item"));
+        this.noPermsItem = new DisplayItem(data.getConfigurationSection("no-perms-item"));
     }
 
     @Getter

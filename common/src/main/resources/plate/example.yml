@@ -1,6 +1,9 @@
 # 当前图鉴对应视图面板
 view-id: "example"
 
+# 展示名
+display-name: "测试图鉴"
+
 # 展示物品
 display-item:
   type: CHEST
@@ -15,6 +18,15 @@ display-item:
     - "&f 领取时间: &a%gotten_date% "
     - ""
     - "&6查看图鉴精灵列表"
+
+# 无权限展示的物品
+no-perms-item:
+  type: BARRIER
+  amount: 1
+  name: "&c????"
+  lore:
+    - ""
+    - "&f目前无法查看该图鉴"
 
 # 图鉴解锁要求设置
 require:
@@ -32,7 +44,8 @@ require:
 # 用于替换界面物品中变量
 variable:
   # 奖励描述，替换变量 %reward%
-  reward: [ ]
+  reward:
+    - "&a   奖励嘎嘎好啊"
 
 # 解锁后获得的奖励
 commands:

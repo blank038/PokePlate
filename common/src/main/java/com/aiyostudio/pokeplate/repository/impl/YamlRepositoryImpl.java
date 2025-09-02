@@ -47,7 +47,7 @@ public class YamlRepositoryImpl extends AbstractRepository {
     public void save(PlayerData playerData, boolean locked) {
         File file = new File(this.storageFolder, playerData.getOwner() + ".yml");
         try {
-            playerData.toConfiguration().save(file);
+            playerData.toYaml().save(file);
         } catch (IOException e) {
             PokePlate.getInstance().getLogger().log(Level.WARNING, e, () -> "Failed to save player data: " + playerData.getOwner());
         }

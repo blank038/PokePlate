@@ -17,7 +17,7 @@ public interface IPokemonModule {
 
     boolean give(CommandSender sender, Player player, String[] params);
 
-    String getPokemonNameBySpeciesValue(String speciesValue);
+    String getTranslationName(String species);
     
     List<String> getPokemonListByStar(int star);
 }

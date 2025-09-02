@@ -1,5 +1,6 @@
 package com.aiyostudio.pokeplate.data.player;
 
+import com.aystudio.core.bukkit.util.mysql.litesql.entity.AbstractEntity;
 import lombok.Getter;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -9,11 +10,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Getter
-public class PlayerData {
+public class PlayerData extends AbstractEntity {
     private final String owner;
     private final Map<String, PokedexChildData> childs = new HashMap<>();
 
     public PlayerData(String owner, FileConfiguration data) {
+        super(owner, data);
         this.owner = owner;
         ConfigurationSection section = data.getConfigurationSection("plate");
         if (section != null) {
@@ -37,7 +39,8 @@ public class PlayerData {
         return childs.containsKey(pokdex) && childs.get(pokdex).hasPokemon(pokemon);
     }
 
-    public FileConfiguration toConfiguration() {
+    @Override
+    public FileConfiguration toYaml() {
         FileConfiguration data = new YamlConfiguration();
         ConfigurationSection plateSection = new YamlConfiguration();
         childs.forEach((k, v) -> plateSection.set(k, v.toSection()));

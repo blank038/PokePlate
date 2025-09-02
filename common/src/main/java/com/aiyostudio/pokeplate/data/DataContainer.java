@@ -18,7 +18,7 @@ import java.util.Map;
  * @author Blank038
  */
 public class DataContainer {
-    public static final Map<String, ItemStack> ITEM_MAP = new HashMap<>();
+    public static final Map<String, ItemStack> PHOTO_ITEMS = new HashMap<>();
     public static final Map<String, List<String>> SPECIES_MAP = new HashMap<>();
     public static final Map<String, PlateData> PLATE_DATA = new HashMap<>();
     public static DateTimeFormatter dateTimeFormatter;

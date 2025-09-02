@@ -33,7 +33,7 @@ public class PokemonModuleImpl implements IPokemonModule {
         for (Species species : PixelmonSpecies.getAll()) {
             Pokemon pokemon = PokemonFactory.create(species);
             String key = String.valueOf(com.mc9y.pokestar.Main.getPokeStarAPI().getPokemonStar(species.getName()));
-            DataContainer.ITEM_MAP.put(species.getName(), PokemonAPI.getInstance().getSpriteHelper().getSpriteItem(pokemon));
+            DataContainer.PHOTO_ITEMS.put(species.getName(), PokemonAPI.getInstance().getSpriteHelper().getSpriteItem(pokemon));
             DataContainer.SPECIES_MAP.putIfAbsent(key, Lists.newArrayList(species.getName()));
             DataContainer.SPECIES_MAP.get(key).add(species.getName());
         }
@@ -72,7 +72,7 @@ public class PokemonModuleImpl implements IPokemonModule {
     }
 
     @Override
-    public String getPokemonNameBySpeciesValue(String speciesValue) {
+    public String getTranslationName(String speciesValue) {
         Optional<RegistryValue<Species>> species = PixelmonSpecies.get(speciesValue);
         return species.map(speciesRegistryValue -> PokemonUtil.getPokemonName(speciesRegistryValue.getValueUnsafe())).orElse(null);
     }

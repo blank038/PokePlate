@@ -29,7 +29,7 @@ public class PokemonModuleImpl implements IPokemonModule {
         for (EnumSpecies species : EnumSpecies.values()) {
             Pokemon pokemon = Pixelmon.pokemonFactory.create(species);
             String key = String.valueOf(com.mc9y.pokestar.Main.getPokeStarAPI().getPokemonStar(species.name()));
-            DataContainer.ITEM_MAP.put(species.name(), PokemonAPI.getInstance().getSpriteHelper().getSpriteItem(pokemon));
+            DataContainer.PHOTO_ITEMS.put(species.name(), PokemonAPI.getInstance().getSpriteHelper().getSpriteItem(pokemon));
             DataContainer.SPECIES_MAP.putIfAbsent(key, Lists.newArrayList(species.name));
             DataContainer.SPECIES_MAP.get(key).add(species.name());
         }
@@ -70,8 +70,8 @@ public class PokemonModuleImpl implements IPokemonModule {
     }
 
     @Override
-    public String getPokemonNameBySpeciesValue(String speciesValue) {
-        return PokemonUtil.getPokemonName(EnumSpecies.valueOf(speciesValue));
+    public String getTranslationName(String species) {
+        return PokemonUtil.getPokemonName(EnumSpecies.valueOf(species));
     }
 
     @Override

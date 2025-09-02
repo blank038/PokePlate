@@ -1,17 +1,33 @@
 package com.aiyostudio.pokeplate.view;
 
 import com.aiyostudio.pokeplate.PokePlate;
+import com.aiyostudio.pokeplate.api.PlateApi;
 import com.aiyostudio.pokeplate.data.DataContainer;
 import com.aiyostudio.pokeplate.data.plate.PlateData;
 import com.aiyostudio.pokeplate.data.player.PlayerData;
+import com.aiyostudio.pokeplate.data.player.PokedexChildData;
+import com.aiyostudio.pokeplate.i18n.I18n;
 import com.aiyostudio.pokeplate.storage.StorageHandler;
+import com.aiyostudio.pokeplate.util.PlayerUtil;
+import com.aiyostudio.pokeplate.util.TextUtil;
+import com.aystudio.core.bukkit.util.common.CommonUtil;
 import com.aystudio.core.bukkit.util.inventory.GuiModel;
+import de.tr7zw.nbtapi.NBTItem;
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Blank038
@@ -31,137 +47,200 @@ public class PokedexView {
         if (playerData == null) {
             return;
         }
+        PokedexChildData childData = playerData.getChild(pokedex);
 
         FileConfiguration data = YamlConfiguration.loadConfiguration(file);
         GuiModel model = new GuiModel(data.getString("title"), data.getInt("size"));
         model.registerListener(PokePlate.getInstance());
+
+        Integer[] slots = CommonUtil.formatSlots(data.getString("pokemon-slots"));
+        int maximum = plateData.getRequire().getPokemon().size();
+        int maxPage = Math.max(1, (maximum / slots.length) + (maximum % slots.length > 0 ? 1 : 0));
+
+        if (data.contains("items")) {
+            String state = I18n.getOption("state.lock");
+            if (childData.isGotten()) {
+                state = I18n.getOption("state.received");
+            } else if (PlateApi.isCompleted(player, pokedex)) {
+                state = I18n.getOption("state.available");
+            }
+            for (String key : data.getConfigurationSection("items").getKeys(false)) {
+                ConfigurationSection section = data.getConfigurationSection("items." + key);
+                ItemStack itemStack = new ItemStack(Material.valueOf(section.getString("type")), section.getInt("amount"));
+                ItemMeta meta = itemStack.getItemMeta();
+                if (section.contains("data")) {
+                    itemStack.setDurability((short) section.getInt("data"));
+                }
+                if (section.contains("customModelData")) {
+                    meta.setCustomModelData(section.getInt("customModelData"));
+                }
+                meta.setDisplayName(TextUtil.colorify(section.getString("name")));
+                List<String> lore = new ArrayList<>();
+                for (String line : section.getStringList("lore")) {
+                    if (line.contains("%reward%")) {
+                        lore.addAll(plateData.getRewardVariable());
+                        continue;
+                    }
+                    lore.add(TextUtil.colorify(line).replace("%state%", state));
+                }
+                meta.setLore(lore);
+                itemStack.setItemMeta(meta);
+
+                if (section.contains("action")) {
+                    NBTItem nbtItem = new NBTItem(itemStack);
+                    nbtItem.setString("PokedexAction", section.getString("action"));
+                    itemStack = nbtItem.getItem();
+                }
+
+                for (int i : CommonUtil.formatSlots(section.getString("slot"))) {
+                    model.setItem(i, itemStack);
+                }
+            }
+        }
+
+        initializePokemonItems(data, model, page, childData, plateData);
+
         model.onClick((e) -> {
             e.setCancelled(true);
+            if (e.getClickedInventory() != e.getInventory()) {
+                return;
+            }
+            ItemStack itemStack = e.getCurrentItem();
+            if (itemStack == null || itemStack.getType() == Material.AIR) {
+                return;
+            }
+            NBTItem nbtItem = new NBTItem(itemStack);
+            if (nbtItem.hasTag("PokedexAction")) {
+                String action = nbtItem.getString("PokedexAction");
+                Player clicker = (Player) e.getWhoClicked();
+                switch (action) {
+                    case "up":
+                        if (e.isRightClick()) {
+                            SelectView.open(clicker);
+                            break;
+                        }
+                        if (page == 1) {
+                            clicker.sendMessage(I18n.getStrAndHeader("no-previous-page"));
+                            break;
+                        }
+                        PokedexView.openGui(player, pokedex, page - 1);
+                        break;
+                    case "down":
+                        if (page >= maxPage) {
+                            clicker.sendMessage(I18n.getStrAndHeader("no-next-page"));
+                            break;
+                        }
+                        PokedexView.openGui(clicker, pokedex, page + 1);
+                        break;
+                    case "reward":
+                        if (PlateApi.isCompleted(clicker, pokedex)) {
+                            tryReceive(clicker, pokedex);
+                            PokedexView.openGui(clicker, pokedex, page);
+                        } else {
+                            clicker.sendMessage(I18n.getStrAndHeader("not-met-condition"));
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
         });
         model.openInventory(player);
+    }
 
-//        PokePlate.getInstance().saveResource("view/select.yml", "view/select.yml", false, (file) -> {
-//            FileConfiguration data = YamlConfiguration.loadConfiguration(file);
-//
-//            GuiModel model = new GuiModel(data.getString("title", "")
-//                    .replace("%display%", PokePlate.getApi().getStarShowName(star)), data.getInt("size"));
-//            model.registerListener(PokePlate.getInstance());
-//            model.setCloseRemove(true);
-//        });
-//        // 创建界面
-//        File file = new File(PokePlate.getInstance().getDataFolder() + "/view", ".yml");
-//        FileConfiguration data = YamlConfiguration.loadConfiguration(file);
-//        GuiModel model = new GuiModel(data.getString("title", "")
-//                .replace("%display%", PokePlate.getApi().getStarShowName(star)), data.getInt("size"));
-//        model.registerListener(PokePlate.getInstance());
-//        model.setCloseRemove(true);
-//        // 设置物品
-//        if (data.contains("items")) {
-//            for (String key : data.getConfigurationSection("items").getKeys(false)) {
-//                ConfigurationSection section = data.getConfigurationSection("items." + key);
-//                ItemStack itemStack = new ItemStack(Material.valueOf(section.getString("type")),
-//                        section.getInt("amount"), (short) section.getInt("data"));
-//                ItemMeta meta = itemStack.getItemMeta();
-//                meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', section.getString("name")));
-//                List<String> lore = new ArrayList<>();
-//                String stats = DataContainer.PLAYER_DATA_MAP.get(player.getName()).hasReward(star + "s")
-//                        ? "§c已领取" : (PokePlate.getApi().allowGet(player, star) ? "§a可领取" : "§e条件未达");
-//                // 增加奖励 Lore
-//                for (String line : section.getStringList("lore")) {
-//                    String rel = ChatColor.translateAlternateColorCodes('&', line)
-//                            .replace("%stats%", stats);
-//                    if (rel.contains("%reward%")) {
-//                        for (String l : PokePlate.getInstance().getConfig().getStringList("Info." + star + "s")) {
-//                            lore.add(ChatColor.translateAlternateColorCodes('&', l));
-//                        }
-//                        continue;
-//                    }
-//                    lore.add(rel);
-//                }
-//                meta.setLore(lore);
-//                itemStack.setItemMeta(meta);
-//                // 判断是否有 action
-//                if (section.contains("action")) {
-//                    NBTItem nbtItem = new NBTItem(itemStack);
-//                    nbtItem.setString("ListAction", section.getString("action"));
-//                    itemStack = nbtItem.getItem();
-//                }
-//                for (int i : CommonUtil.formatSlots(section.getString("slot"))) {
-//                    model.setItem(i, itemStack);
-//                }
-//            }
-//        }
-//        // 设置精灵物品列表
-//        List<String> pokemons = PokePlate.getApi().getPokemonListByStar(star);
-//        Integer[] slot = CommonUtil.formatSlots(data.getString("pokemon_slot"));
-//        // 计算界面数据
-//        final int maxPage = (pokemons.isEmpty() ? 1 : (pokemons.size() / slot.length))
-//                + (pokemons.isEmpty() ? 0 : (pokemons.size() % slot.length > 0 ? 1 : 0));
-//        final int start = page > maxPage ? 1 : (page - 1) * slot.length,
-//                end = page * slot.length;
-//        for (int index = 0, s = start; s < end && s < pokemons.size()
-//                && index < slot.length; s++, index++) {
-//            String pokemon = pokemons.get(s);
-//            try {
-//                ItemStack itemStack = DataContainer.ITEM_MAP.get(pokemon).clone();
-//                if (PokePlate.getApi().hasPokemon(player, pokemon)) {
-//                    itemStack.addUnsafeEnchantment(Enchantment.LUCK, 10);
-//                }
-//                ItemMeta itemMeta = itemStack.getItemMeta();
-//                itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', data.getString("pokemon_info.name")
-//                        .replace("%pokemon_name%", PokePlate.getApi().getPokemonNameBySpeciesValue(pokemon))));
-//                List<String> list = new ArrayList<>();
-//                for (String line : data.getStringList("pokemon_info.lore")) {
-//                    list.add(ChatColor.translateAlternateColorCodes('&', line));
-//                }
-//                itemMeta.setLore(list);
-//                itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
-//                itemStack.setItemMeta(itemMeta);
-//                model.setItem(slot[index], itemStack);
-//            } catch (Exception e) {
-//                PokePlate.getInstance().getLogger().log(Level.WARNING, e, () -> String.format("Failed to create photo from %s", pokemon));
-//            }
-//        }
-//        model.onClick((e) -> {
-//            e.setCancelled(true);
-//            if (e.getClickedInventory() == e.getInventory()) {
-//                ItemStack itemStack = e.getCurrentItem();
-//                if (itemStack == null || itemStack.getType() == Material.AIR) {
-//                    return;
-//                }
-//                NBTItem nbtItem = new NBTItem(itemStack);
-//                if (nbtItem.hasTag("ListAction")) {
-//                    String action = nbtItem.getString("ListAction");
-//                    Player clicker = (Player) e.getWhoClicked();
-//                    switch (action) {
-//                        case "up":
-//                            if (page == 1) {
-//                                clicker.sendMessage(I18n.getStrAndHeader("no-previous-page"));
-//                                break;
-//                            }
-//                            ListGui.openGui(player, star, page - 1);
-//                            break;
-//                        case "down":
-//                            if (page >= maxPage) {
-//                                clicker.sendMessage(I18n.getStrAndHeader("no-next-page"));
-//                                break;
-//                            }
-//                            ListGui.openGui(player, star, page + 1);
-//                            break;
-//                        case "reward":
-//                            if (!PokePlate.getApi().allowGet(clicker, star)) {
-//                                clicker.sendMessage(I18n.getStrAndHeader("claimed"));
-//                                break;
-//                            }
-//                            PokePlate.getInstance().giveReward(clicker, star);
-//                            clicker.sendMessage(I18n.getStrAndHeader("gotten").replace("%star_name%", PokePlate.getApi().getStarShowName(star)));
-//                            break;
-//                        default:
-//                            break;
-//                    }
-//                }
-//            }
-//        });
-//        model.openInventory(player);
+    private static void tryReceive(Player player, String pokedex) {
+        PlayerData playerData = StorageHandler.getPlayerDataFromMemory(player.getName()).orElse(null);
+        if (playerData == null) {
+            player.sendMessage(I18n.getStrAndHeader("error"));
+            return;
+        }
+        PlateData plateData = DataContainer.PLATE_DATA.get(pokedex);
+        if (plateData == null) {
+            player.sendMessage(I18n.getStrAndHeader("error"));
+            return;
+        }
+        PokedexChildData childData = playerData.getChild(pokedex);
+        if (childData.isGotten()) {
+            player.sendMessage(I18n.getStrAndHeader("claimed"));
+            return;
+        }
+        childData.setGotten(true);
+        childData.setGottenDate(LocalDateTime.now());
+        PlayerUtil.executeCommands(player, plateData.getCommands());
+        player.sendMessage(I18n.getStrAndHeader("gotten").replace("%plate_name%", plateData.getDisplayName()));
+    }
+
+    private static void initializePokemonItems(FileConfiguration data, GuiModel model, int page, PokedexChildData childData, PlateData plateData) {
+        ConfigurationSection section = data.getConfigurationSection("display-item");
+        Integer[] slots = CommonUtil.formatSlots(data.getString("pokemon-slots"));
+        List<String> requirePokemon = plateData.getRequire().getPokemon();
+
+        int start = slots.length * (page - 1), end = Math.min(requirePokemon.size(), slots.length * page);
+
+        List<String> pokemonList = requirePokemon.subList(start, end);
+        String type = data.getString("display-type").toLowerCase();
+
+        for (int i = 0, size = pokemonList.size(); i < slots.length && i < size; i++) {
+            String species = pokemonList.get(i);
+            ItemStack itemStack = getDisplayItem(section, type, species, childData.hasPokemon(species));
+            model.setItem(slots[i], itemStack);
+        }
+    }
+
+    private static ItemStack getDisplayItem(ConfigurationSection section, String type, String species, boolean contains) {
+        ItemStack itemStack = null;
+        switch (type) {
+            case "normal":
+                ConfigurationSection normalSection = section.getConfigurationSection(contains ? "unlock" : "lock");
+                itemStack = buildItem(normalSection, species);
+                break;
+            case "enchantment":
+                ConfigurationSection enchantSection = section.getConfigurationSection("photo");
+                itemStack = buildPhoto(enchantSection, species, contains);
+                break;
+            case "mixture":
+                ConfigurationSection mixtureSection = section.getConfigurationSection(contains ? "photo" : "lock");
+                itemStack = contains ? buildPhoto(mixtureSection, species, false) : buildItem(mixtureSection, species);
+                break;
+            default:
+                break;
+        }
+        return itemStack;
+    }
+
+    private static ItemStack buildItem(ConfigurationSection section, String species) {
+        String speciesName = PokePlate.getModule().getTranslationName(species);
+        Material material = Material.valueOf(section.getString("type"));
+        ItemStack itemStack = new ItemStack(material);
+        ItemMeta meta = itemStack.getItemMeta();
+        if (section.contains("data")) {
+            itemStack.setDurability((short) section.getInt("data"));
+        }
+        if (section.contains("customModelData")) {
+            meta.setCustomModelData(section.getInt("customModelData"));
+        }
+        meta.setDisplayName(TextUtil.colorify(section.getString("name").replace("%pokemon_name%", speciesName)));
+        List<String> lore = section.getStringList("lore");
+        lore.replaceAll(TextUtil::colorify);
+        meta.setLore(lore);
+        itemStack.setItemMeta(meta);
+        return itemStack;
+    }
+
+
+    private static ItemStack buildPhoto(ConfigurationSection section, String species, boolean enchantment) {
+        String speciesName = PokePlate.getModule().getTranslationName(species);
+        ItemStack itemStack = DataContainer.PHOTO_ITEMS.getOrDefault(species, new ItemStack(Material.STONE));
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        itemMeta.setDisplayName(TextUtil.colorify(section.getString("name").replace("%pokemon_name%", speciesName)));
+        List<String> lore = section.getStringList("lore");
+        lore.replaceAll(TextUtil::colorify);
+        itemMeta.setLore(lore);
+        if (enchantment) {
+            itemMeta.addEnchant(Enchantment.DAMAGE_ALL, 1, true);
+            itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        }
+        itemStack.setItemMeta(itemMeta);
+        return itemStack;
     }
 }

@@ -12,7 +12,7 @@ public class StorageHandler {
     private static AbstractRepository repository;
 
     public static void initRepository() {
-        String type = PokePlate.getInstance().getConfig().getString("save-option.type", "yaml");
+        String type = PokePlate.getInstance().getConfig().getString("data-option.type", "yaml");
         switch (type.toLowerCase()) {
             case "mysql":
                 repository = new MySQLRepositoryImpl();

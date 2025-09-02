@@ -46,7 +46,6 @@ public class I18n {
                 CommonUtil.outputFileTool(PokePlate.getInstance().getResource("language/" + lang), tar);
             }
         }
-        // 读取语言配置文件
         File file = new File(folder, language + ".yml");
         if (!file.exists()) {
             file = new File(folder, "zh_CN.yml");

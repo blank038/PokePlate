@@ -3,16 +3,35 @@ title: "&f默认图鉴"
 # 界面大小
 size: 54
 # 精灵列表槽位
-pokemon_slot: 9-44
-# 精灵信息
-pokemon_info:
-  name: "&f%pokemon_name%"
-  lore: [ ]
+pokemon-slots: 9-44
+
+# 展示状态, 支持: NORMAL, ENCHANTMENT
+# NORMAL: 未解锁精灵显示的物品为下方 display-item.lock, 解锁后显示为 display-item.unlock
+# ENCHANTMENT: 未解锁精灵显示为精灵相片(display-item.photo), 解锁后进行附魔
+# MIXTURE: 未解锁精灵显示为 display-item.lock, 解锁后显示 display-item.photo
+display-type: MIXTURE
+
+# 展示物品
+display-item:
+  lock:
+    type: BARRIER
+    # data: 0
+    # customModelData: 0
+    name: "&f%pokemon_name%"
+    lore: [ ]
+  unlock:
+    type: PIXELMON_POKE_BALL
+    name: "&f%pokemon_name%"
+    lore: [ ]
+  photo:
+    name: "&f%pokemon_name%"
+    lore: [ ]
+
 # 界面物品
 items:
   fg:
     type: STAINED_GLASS_PANE
-    data: 0
+    data: 15
     amount: 1
     name: ""
     lore: [ ]
@@ -24,13 +43,13 @@ items:
     name: "&3领取图鉴奖励"
     lore:
       - "&f"
-      - " &f▶ 图鉴介绍:"
-      - " &f  - &a图鉴附魔那就是已达成的 "
+      - " &b▶ 图鉴介绍:"
+      - " &f  &a这是一个图鉴例子 "
       - " &b▶ &f图鉴奖励:"
       - "%reward%"
-      - " &b▶ &f奖励状态: &f%stats% "
+      - " &b▶ &f奖励状态: &f%state% "
       - "&d"
-      - " &e 点击领取奖励 &a✔ "
+      - " &e点击领取奖励 "
       - "&b"
     action: reward
     slot: 49
@@ -40,7 +59,10 @@ items:
     name: "&f上一页"
     slot: 46
     action: up
-    lore: [ ]
+    lore:
+      - ""
+      - "&7左键查看上一页"
+      - "&7右键返回首页"
   down:
     type: PAPER
     amount: 1

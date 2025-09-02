@@ -1,9 +1,9 @@
 # 数据存储设置
-save-option:
+data-option:
   # 可选: YAML, MYSQL 默认 YAML
   type: YAML
   # 数据库 URL 设定，例如: jdbc:mysql://127.0.0.1/minecraft, 格式：jdbc:mysql://MySQL地址/数据库名
-  url: jdbc:mysql://localhost/minecraft
+  url: jdbc:mysql://localhost/minecraft?useUnicode=true&characterEncoding=utf-8
   # 数据库用户名
   user: "root"
   # 数据库密码
