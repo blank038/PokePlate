@@ -1,0 +1,13 @@
+title: "&8图鉴大全"
+size: 54
+# 图鉴显示的槽位
+plate-slots: 13,21,23,29,31,33,37,39,41,43
+# 额外展示物品
+items:
+  fg:
+    type: STAINED_GLASS_PANE
+    data: 15
+    amount: 1
+    name: "&f"
+    lore: [ ]
+    slot: 0-8,45-53

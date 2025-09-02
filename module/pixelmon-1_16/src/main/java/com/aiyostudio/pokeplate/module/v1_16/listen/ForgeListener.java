@@ -1,7 +1,6 @@
 package com.aiyostudio.pokeplate.module.v1_16.listen;
 
-import com.aiyostudio.pokeplate.PokePlate;
-import com.aiyostudio.pokeplate.data.DataContainer;
+import com.aiyostudio.pokeplate.api.PlateApi;
 import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.api.events.CaptureEvent;
 import com.pixelmonmod.pixelmon.api.events.EvolveEvent;
@@ -20,18 +19,17 @@ public class ForgeListener implements Listener {
             if (e.isCanceled()) {
                 return;
             }
-            String name = e.getPlayer().getName().getString();
-            Player player = Bukkit.getPlayer(name);
-            if (e.getPokemon() != null && !PokePlate.getApi().hasPokemon(player, e.getPokemon().getSpecies())) {
-                DataContainer.PLAYER_DATA_MAP.get(name).addPokedex(e.getPokemon().getSpecies().getName());
+            Player player = Bukkit.getPlayer(e.getPlayer().getUUID());
+            if (e.getPokemon() != null && player != null) {
+                PlateApi.addPokedex(player, e.getPokemon().getSpecies().getName());
             }
         });
         Pixelmon.EVENT_BUS.addListener(EventPriority.NORMAL, true, EvolveEvent.Post.class, (e) -> {
-            String name = e.getPlayer().getName().getString();
-            Player player = Bukkit.getPlayer(name);
-            if (e.getPokemon() != null && !PokePlate.getApi().hasPokemon(player, e.getPokemon().getSpecies())) {
-                DataContainer.PLAYER_DATA_MAP.get(name).addPokedex(e.getPokemon().getSpecies().getName());
+            Player player = Bukkit.getPlayer(e.getPlayer().getUUID());
+            if (e.getPokemon() == null || player == null) {
+                return;
             }
+            PlateApi.addPokedex(player, e.getPokemon().getSpecies().getName());
         });
     }
 }

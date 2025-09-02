@@ -1,12 +1,5 @@
-import org.apache.tools.ant.filters.ReplaceTokens
-
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '4.0.2'
-}
-
-project.ext {
-    ver = "2.0.2-BETA"
 }
 
 dependencies {
@@ -15,11 +8,17 @@ dependencies {
     implementation project(":module:pixelmon-1_16")
 }
 
+sourceCompatibility = targetCompatibility = '1.8'
+compileJava {
+    sourceCompatibility = targetCompatibility = '1.8'
+}
+
 allprojects {
     apply plugin: 'java'
 
-    archivesBaseName = "PokemonInfo"
-    version = ""
+    group = 'com.aiyostudio.pokeplate'
+    version = '2.1.0-BETA'
+    archivesBaseName = "PokePlate"
 
     sourceCompatibility = targetCompatibility = '1.8'
     compileJava {
@@ -40,19 +39,6 @@ allprojects {
         annotationProcessor("org.projectlombok:lombok:1.18.24")
     }
 
-    processResources {
-        from(sourceSets.main.resources.srcDirs) {
-            include '**/*.yml'
-            filter ReplaceTokens, tokens: ["version": project.property("ver")]
-            duplicatesStrategy DuplicatesStrategy.INCLUDE
-        }
-    }
-
-    processResources {
-        setFilteringCharset("UTF-8")
-        expand project.properties
-    }
-
     tasks.withType(JavaCompile) {
         options.encoding = "UTF-8"
     }
@@ -60,9 +46,7 @@ allprojects {
 
 subprojects.each { subproject -> evaluationDependsOn(subproject.path) }
 
-tasks.register('allJar', Jar) {
-    dependsOn subprojects.tasks["build"]
-    baseName = 'PokePlate-' + project.property("ver")
+task allJar(type: Jar, dependsOn: subprojects.tasks["build"]) {
     subprojects.each { subproject ->
         from subproject.configurations.archives.allArtifacts.files.collect {
             zipTree(it)

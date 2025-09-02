@@ -1,10 +1,11 @@
 package com.aiyostudio.pokeplate.module.v1_16;
 
-import com.aiyostudio.pokeplate.PlayerData;
+import com.aiyostudio.pokeplate.api.impl.IPokemonWrapper;
 import com.aiyostudio.pokeplate.PokePlate;
-import com.aiyostudio.pokeplate.api.IPokePlateApi;
+import com.aiyostudio.pokeplate.api.IPokemonModule;
 import com.aiyostudio.pokeplate.data.DataContainer;
 import com.aiyostudio.pokeplate.i18n.I18n;
+import com.aiyostudio.pokeplate.manager.StateManager;
 import com.aiyostudio.pokeplate.module.v1_16.listen.ForgeListener;
 import com.aystudio.core.pixelmon.PokemonAPI;
 import com.aystudio.core.pixelmon.api.pokemon.PokemonUtil;
@@ -26,9 +27,9 @@ import java.util.Optional;
 /**
  * @author Blank038
  */
-public class PokePlateApiImpl implements IPokePlateApi<Species> {
+public class PokemonModuleImpl implements IPokemonModule {
 
-    public PokePlateApiImpl() {
+    public PokemonModuleImpl() {
         for (Species species : PixelmonSpecies.getAll()) {
             Pokemon pokemon = PokemonFactory.create(species);
             String key = String.valueOf(com.mc9y.pokestar.Main.getPokeStarAPI().getPokemonStar(species.getName()));
@@ -40,20 +41,13 @@ public class PokePlateApiImpl implements IPokePlateApi<Species> {
     }
 
     @Override
-    public boolean hasPokemon(String pokemonName) {
+    public IPokemonWrapper getPokemon(int slot) {
+        return null;
+    }
+
+    @Override
+    public boolean hasSpecies(String pokemonName) {
         return PixelmonSpecies.fromName(pokemonName).getValue().isPresent();
-    }
-
-    @Override
-    public boolean hasPokemon(Player p, Species es) {
-        PlayerData playerData = DataContainer.PLAYER_DATA_MAP.get(p.getName());
-        return playerData != null && playerData.hasPokedex(es.getName());
-    }
-
-    @Override
-    public boolean hasPokemon(Player player, String pokemon) {
-        PlayerData playerData = DataContainer.PLAYER_DATA_MAP.get(player.getName());
-        return playerData != null && playerData.hasPokedex(pokemon);
     }
 
     @Override
@@ -65,18 +59,16 @@ public class PokePlateApiImpl implements IPokePlateApi<Species> {
             sender.sendMessage(I18n.getStrAndHeader("error"));
             return false;
         }
+        if (specie == null) {
+            return false;
+        }
         if (params.length > 3 && "true".equalsIgnoreCase(params[3])) {
             Pokemon pokemon = PokemonFactory.create(specie);
             StorageProxy.getParty(player.getUniqueId()).add(pokemon);
-        } else if (!this.hasPokemon(player, specie)) {
+        }/* else if (!this.hasPokemon(player, specie.getName())) {
             DataContainer.PLAYER_DATA_MAP.get(player.getName()).addPokedex(specie.getName());
-        }
+        } */
         return true;
-    }
-
-    @Override
-    public String getStarShowName(int star) {
-        return Main.getPokeStarAPI().getPokeShowName(star);
     }
 
     @Override
@@ -87,6 +79,9 @@ public class PokePlateApiImpl implements IPokePlateApi<Species> {
 
     @Override
     public List<String> getPokemonListByStar(int star) {
-        return Main.getPokeStarAPI().getStarPokemon(star);
+        if (StateManager.pokeStar) {
+            return Main.getPokeStarAPI().getStarPokemon(star);
+        }
+        return Lists.newArrayList();
     }
 }

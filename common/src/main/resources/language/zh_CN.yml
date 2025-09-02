@@ -5,10 +5,18 @@ pls-enter-pokemon: "请输入宝可梦名."
 
 player-offline: "玩家不在线或数据还未加载完成."
 error: "出现错误."
+not-found-pokemon: "未找到精灵."
+not-origin-trainer: "你不是该精灵的首位训练师."
 
 no-previous-page: "已经是第一页了."
 no-next-page: "已经是最后一页了."
 claimed: "已领取过或条件未达."
 gotten: "成功领取 &a%star_name% &f奖励！"
+check: "成功解锁该精灵图鉴."
+
+variable:
+  empty-date: "无"
+
+placeholders: { }
 
 reload: "插件配置重载完成."

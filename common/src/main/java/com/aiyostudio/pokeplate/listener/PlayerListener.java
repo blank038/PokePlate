@@ -1,8 +1,9 @@
 package com.aiyostudio.pokeplate.listener;
 
 import com.aiyostudio.pokeplate.PokePlate;
-import com.aiyostudio.pokeplate.PlayerData;
+import com.aiyostudio.pokeplate.data.player.PlayerData;
 import com.aiyostudio.pokeplate.data.DataContainer;
+import com.aiyostudio.pokeplate.storage.StorageHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,16 +18,11 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            DataContainer.PLAYER_DATA_MAP.put(e.getPlayer().getName(), new PlayerData(e.getPlayer()));
-        });
+        StorageHandler.loadPlayerData(e.getPlayer().getName());
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
-        PlayerData playerData = DataContainer.PLAYER_DATA_MAP.remove(e.getPlayer().getName());
-        if (playerData != null) {
-            playerData.save();
-        }
+        StorageHandler.unloadAndSave(e.getPlayer().getName());
     }
 }

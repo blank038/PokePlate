@@ -6,6 +6,10 @@ depend:
 softdepend:
   - PlaceholderAPI
 version: @version@
+api-version: 1.13
 commands:
-  tj:
-    description: Command for PokePlate
+  pokeplate:
+    aliases:
+      - tj
+      - plate
+    description: Command for PokePlate.

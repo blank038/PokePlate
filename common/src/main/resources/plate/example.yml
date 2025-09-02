@@ -1,0 +1,40 @@
+# 当前图鉴对应视图面板
+view-id: "example"
+
+# 展示物品
+display-item:
+  type: CHEST
+  amount: 1
+  # data: 0
+  # customModelData: 0
+  name: "&c测试图鉴"
+  lore:
+    - ""
+    - "&f 当前进度: &a%progress%% "
+    - "&f 完成时间: &a%unlock_date% "
+    - "&f 领取时间: &a%gotten_date% "
+    - ""
+    - "&6查看图鉴精灵列表"
+
+# 图鉴解锁要求设置
+require:
+  # 查看当前图鉴所需权限，无需权限时填写 none
+  permission: "pokeplate.default"
+  # 解锁当前图鉴需要解锁哪些图鉴才能触发
+  plate: [ ]
+  # 是否可以提前记录解锁精灵，即：玩家还没解锁所需图鉴之前能不能提前解锁精灵
+  unlock: true
+  # 需要解锁的精灵列表
+  pokemon:
+    - "Pikachu"
+    - "Mewtwo"
+
+# 用于替换界面物品中变量
+variable:
+  # 奖励描述，替换变量 %reward%
+  reward: [ ]
+
+# 解锁后获得的奖励
+commands:
+  - "console:say Hello, %player%!"
+  - "op:say Thanks myself!"

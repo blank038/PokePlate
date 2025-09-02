@@ -1,46 +1,16 @@
-# 检测间隔
-CheckDelay: 10
-# 某个星级图鉴奖励
-Stars:
-  1s:
-    - "nye give %player% 钻石 500"
-  2s:
-    - "nye give %player% 钻石 1000"
-  3s:
-    - "nye give %player% 钻石 2000"
-  4s:
-    - "nye give %player% 钻石 2000"
-  5s:
-    - "nye give %player% 钻石 2000"
-  6s:
-    - "nye give %player% 钻石 2500"
-  7s:
-    - "nye give %player% 钻石 3000"
-  8s:
-    - "nye give %player% 钻石 2000"
-  9s:
-    - "nye give %player% 钻石 800"
-  10s:
-    - "nye give %player% 钻石 3000"
-# 星级图鉴奖励 Lore 中显示的内容
-Info:
-  1s:
-    - " &f  - &a钻石 x500 "
-  2s:
-    - " &f  - &a钻石 x1000 "
-  3s:
-    - " &f  - &a钻石 x2000 "
-  4s:
-    - " &f  - &a钻石 x2000 "
-  5s:
-    - " &f  - &a钻石 x2000 "
-  6s:
-    - " &f  - &a钻石 x2500 "
-  7s:
-    - " &f  - &a钻石 x3000 "
-  8s:
-    - " &f  - &a钻石 x2000 "
-  9s:
-    - " &f  - &a钻石 x800 "
-  10s:
-    - " &f  - &a钻石 x3000 "
+# 数据存储设置
+save-option:
+  # 可选: YAML, MYSQL 默认 YAML
+  type: YAML
+  # 数据库 URL 设定，例如: jdbc:mysql://127.0.0.1/minecraft, 格式：jdbc:mysql://MySQL地址/数据库名
+  url: jdbc:mysql://localhost/minecraft
+  # 数据库用户名
+  user: "root"
+  # 数据库密码
+  password: "root"
+  # 数据库读取超时打开数据锁时长, 2 = 1秒
+  time-out: 20
+  # 登录数据加载提示
+  pull-message: true
+# 时间格式
+date-format: "yyyy-MM-dd HH:mm:ss"

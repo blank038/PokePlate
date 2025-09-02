@@ -1,0 +1,50 @@
+# 界面标题
+title: "&f默认图鉴"
+# 界面大小
+size: 54
+# 精灵列表槽位
+pokemon_slot: 9-44
+# 精灵信息
+pokemon_info:
+  name: "&f%pokemon_name%"
+  lore: [ ]
+# 界面物品
+items:
+  fg:
+    type: STAINED_GLASS_PANE
+    data: 0
+    amount: 1
+    name: ""
+    lore: [ ]
+    slot: "0-8,45,47,48,50,51,53"
+  reward:
+    type: CHEST
+    data: 0
+    amount: 1
+    name: "&3领取图鉴奖励"
+    lore:
+      - "&f"
+      - " &f▶ 图鉴介绍:"
+      - " &f  - &a图鉴附魔那就是已达成的 "
+      - " &b▶ &f图鉴奖励:"
+      - "%reward%"
+      - " &b▶ &f奖励状态: &f%stats% "
+      - "&d"
+      - " &e 点击领取奖励 &a✔ "
+      - "&b"
+    action: reward
+    slot: 49
+  up:
+    type: PAPER
+    amount: 1
+    name: "&f上一页"
+    slot: 46
+    action: up
+    lore: [ ]
+  down:
+    type: PAPER
+    amount: 1
+    name: "&f下一页"
+    slot: 52
+    action: down
+    lore: [ ]
