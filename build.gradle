@@ -17,7 +17,7 @@ allprojects {
     apply plugin: 'java'
 
     group = 'com.aiyostudio.pokeplate'
-    version = '2.1.0-BETA'
+    version = '2.1.1-BETA'
     archivesBaseName = "PokePlate"
 
     sourceCompatibility = targetCompatibility = '1.8'
