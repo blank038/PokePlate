@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface IPokemonModule {
 
-    IPokemonWrapper getPokemon(int slot);
+    IPokemonWrapper getPokemon(Player player, int slot);
 
     boolean hasSpecies(String pokemonName);
 

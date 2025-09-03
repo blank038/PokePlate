@@ -1,11 +1,13 @@
 package com.aiyostudio.pokeplate.module.v1_16;
 
+import com.aiyostudio.pokeplate.api.PlateApi;
 import com.aiyostudio.pokeplate.api.impl.IPokemonWrapper;
 import com.aiyostudio.pokeplate.PokePlate;
 import com.aiyostudio.pokeplate.api.IPokemonModule;
 import com.aiyostudio.pokeplate.data.DataContainer;
 import com.aiyostudio.pokeplate.i18n.I18n;
 import com.aiyostudio.pokeplate.manager.StateManager;
+import com.aiyostudio.pokeplate.module.v1_16.impl.PokemonWrapperImpl;
 import com.aiyostudio.pokeplate.module.v1_16.listen.ForgeListener;
 import com.aystudio.core.pixelmon.PokemonAPI;
 import com.aystudio.core.pixelmon.api.pokemon.PokemonUtil;
@@ -41,8 +43,12 @@ public class PokemonModuleImpl implements IPokemonModule {
     }
 
     @Override
-    public IPokemonWrapper getPokemon(int slot) {
-        return null;
+    public IPokemonWrapper getPokemon(Player player, int slot) {
+        Pokemon pokemon = StorageProxy.getParty(player.getUniqueId()).get(slot);
+        if (pokemon == null || pokemon.isEgg()) {
+            return null;
+        }
+        return new PokemonWrapperImpl(pokemon);
     }
 
     @Override
@@ -65,9 +71,9 @@ public class PokemonModuleImpl implements IPokemonModule {
         if (params.length > 3 && "true".equalsIgnoreCase(params[3])) {
             Pokemon pokemon = PokemonFactory.create(specie);
             StorageProxy.getParty(player.getUniqueId()).add(pokemon);
-        }/* else if (!this.hasPokemon(player, specie.getName())) {
-            DataContainer.PLAYER_DATA_MAP.get(player.getName()).addPokedex(specie.getName());
-        } */
+        } else {
+            PlateApi.addPokedex(player, specie.getName());
+        }
         return true;
     }
 

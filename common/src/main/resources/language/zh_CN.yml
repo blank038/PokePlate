@@ -16,6 +16,7 @@ gotten: "成功领取 &a%plate_name% &f奖励！"
 check: "成功解锁该精灵的图鉴."
 complete: "恭喜你完成了一个新的图鉴 &a%plate_name%"
 unlock: "恭喜你为图鉴 &a%plate_name% &f解锁了一只新精灵 &a%species%"
+success: "已为玩家解锁指定精灵图鉴."
 
 pull-start: "图鉴数据加载中, 请等待."
 pull-end: "图鉴数据加载完成."

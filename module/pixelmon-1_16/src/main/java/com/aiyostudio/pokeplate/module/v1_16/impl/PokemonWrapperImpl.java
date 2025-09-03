@@ -12,11 +12,11 @@ public class PokemonWrapperImpl implements IPokemonWrapper {
 
     @Override
     public String getSpecies() {
-        return "";
+        return pokemon.getSpecies().getName();
     }
 
     @Override
     public String getOriginTrainer() {
-        return "";
+        return pokemon.getOriginalTrainer();
     }
 }

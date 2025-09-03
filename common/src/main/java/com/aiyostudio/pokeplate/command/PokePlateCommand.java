@@ -67,7 +67,7 @@ public class PokePlateCommand implements CommandExecutor {
                 sender.sendMessage(I18n.getStrAndHeader("success"));
             }
         } else {
-            sender.sendMessage(I18n.getStrAndHeader("wrong-pokemon"));
+            sender.sendMessage(I18n.getStrAndHeader("not-found-pokemon"));
         }
     }
 
@@ -91,7 +91,7 @@ public class PokePlateCommand implements CommandExecutor {
         slot--;
 
         // Get party storage from target player.
-        IPokemonWrapper pokemonWrapper = PokePlate.getModule().getPokemon(slot);
+        IPokemonWrapper pokemonWrapper = PokePlate.getModule().getPokemon((Player) sender, slot);
         if (pokemonWrapper == null) {
             sender.sendMessage(I18n.getStrAndHeader("not-found-pokemon"));
             return;
