@@ -26,7 +26,7 @@ public class ForgeListener implements Listener {
         });
         Pixelmon.EVENT_BUS.addListener(EventPriority.NORMAL, true, EvolveEvent.Post.class, (e) -> {
             Player player = Bukkit.getPlayer(e.getPlayer().getUUID());
-            if (e.getPokemon() == null || player == null) {
+            if (e.getEntity() == null || e.getPokemon() == null || player == null) {
                 return;
             }
             PlateApi.addPokedex(player, e.getPokemon().getSpecies().getName());
