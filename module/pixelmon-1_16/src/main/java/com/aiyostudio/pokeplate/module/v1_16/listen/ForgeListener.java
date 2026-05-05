@@ -4,6 +4,7 @@ import com.aiyostudio.pokeplate.api.PlateApi;
 import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.api.events.CaptureEvent;
 import com.pixelmonmod.pixelmon.api.events.EvolveEvent;
+import com.pixelmonmod.pixelmon.api.events.PokemonReceivedEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -30,6 +31,13 @@ public class ForgeListener implements Listener {
                 return;
             }
             PlateApi.addPokedex(player, e.getPokemon().getSpecies().getName());
+        });
+        Pixelmon.EVENT_BUS.addListener(EventPriority.NORMAL, true, PokemonReceivedEvent.class, (e) -> {
+            Player player = Bukkit.getPlayer(e.getPlayer().getUUID());
+            // 只登记首训为玩家自己的精灵，避免交易、转赠等来源误解锁图鉴。
+            if (player != null && e.getPokemon() != null && e.getPokemon().isOriginalTrainer(e.getPlayer())) {
+                PlateApi.addPokedex(player, e.getPokemon().getSpecies().getName());
+            }
         });
     }
 }

@@ -8,11 +8,6 @@ dependencies {
     implementation project(":module:pixelmon-1_16")
 }
 
-sourceCompatibility = targetCompatibility = '1.8'
-compileJava {
-    sourceCompatibility = targetCompatibility = '1.8'
-}
-
 allprojects {
     apply plugin: 'java'
 
@@ -20,9 +15,10 @@ allprojects {
     version = '2.1.2-BETA'
     archivesBaseName = "PokePlate"
 
-    sourceCompatibility = targetCompatibility = '1.8'
-    compileJava {
-        sourceCompatibility = targetCompatibility = '1.8'
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(8)
+        }
     }
 
     repositories {
