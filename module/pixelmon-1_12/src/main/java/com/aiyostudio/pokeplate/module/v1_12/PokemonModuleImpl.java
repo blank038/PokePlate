@@ -29,11 +29,13 @@ public class PokemonModuleImpl implements IPokemonModule {
 
     public PokemonModuleImpl() {
         for (EnumSpecies species : EnumSpecies.values()) {
-            Pokemon pokemon = Pixelmon.pokemonFactory.create(species);
-            String key = String.valueOf(com.mc9y.pokestar.Main.getPokeStarAPI().getPokemonStar(species.name()));
-            DataContainer.PHOTO_ITEMS.put(species.name(), PokemonAPI.getInstance().getSpriteHelper().getSpriteItem(pokemon));
-            DataContainer.SPECIES_MAP.putIfAbsent(key, Lists.newArrayList(species.name));
-            DataContainer.SPECIES_MAP.get(key).add(species.name());
+            try {
+                Pokemon pokemon = Pixelmon.pokemonFactory.create(species);
+                String key = String.valueOf(com.mc9y.pokestar.Main.getPokeStarAPI().getPokemonStar(species.name()));
+                DataContainer.PHOTO_ITEMS.put(species.name(), PokemonAPI.getInstance().getSpriteHelper().getSpriteItem(pokemon));
+                DataContainer.SPECIES_MAP.putIfAbsent(key, Lists.newArrayList(species.name));
+                DataContainer.SPECIES_MAP.get(key).add(species.name());
+            } catch (ArrayIndexOutOfBoundsException ignored) {}
         }
         Bukkit.getPluginManager().registerEvents(new ForgeListener(), PokePlate.getInstance());
     }
@@ -67,8 +69,10 @@ public class PokemonModuleImpl implements IPokemonModule {
             return false;
         }
         if (params.length > 3 && "true".equalsIgnoreCase(params[3])) {
-            Pokemon pokemon = Pixelmon.pokemonFactory.create(specie);
-            Pixelmon.storageManager.getParty(player.getUniqueId()).add(pokemon);
+            try {
+                Pokemon pokemon = Pixelmon.pokemonFactory.create(specie);
+                Pixelmon.storageManager.getParty(player.getUniqueId()).add(pokemon);
+            } catch (ArrayIndexOutOfBoundsException ignored) {}
         } else {
             PlateApi.addPokedex(player, specie.name());
         }
